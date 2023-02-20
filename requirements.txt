@@ -1,0 +1,5 @@
+fastapi
+typing
+strawberry-graphql[debug-server]
+starlette
+"uvicorn[standard]"
