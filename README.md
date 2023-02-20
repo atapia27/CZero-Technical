@@ -1,1 +1,0 @@
-# CZero Technical Assessment
