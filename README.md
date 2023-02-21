@@ -20,10 +20,17 @@ python -m strawberry server schema
 ```
 {
   weatherForecastByCityAndDate(city: "Mexico City", date: "2023-02-25") {
-		time
-    tempC
-    humidity
-
+    date
+    dayofweek
+    avgTemp
+    minTemp
+    maxTemp
+		avgHumidity
+    hourlyForecast{
+      currentHour
+      tempF
+      humidity
+    }
   }
 }
 ```

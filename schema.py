@@ -13,11 +13,21 @@ WEATHER_API_URL = "https://api.weatherapi.com/v1/forecast.json"
 WEATHER_API_KEY = '6020e8083693420ca19234830231902'
 today = datetime.today().strftime('%Y-%m-%d')
 
-# Define a data class to represent the weather forecast data
 @strawberry.type
-class WeatherForecast:
-    time: datetime
-    temp_c: float
+class WeeklyForecast:
+    date: datetime
+    dayofweek: str
+    avg_temp: float
+    min_temp: float
+    max_temp: float
+    avg_humidity: float
+    hourly_forecast: List['HourlyForecast']
+    
+# Define a data class to represent the hourly weather forecast data
+@strawberry.type
+class HourlyForecast:
+    current_hour: str
+    temp_f: float
     humidity: float
     
 # Define a data class to represent a favorite location
@@ -25,7 +35,7 @@ class WeatherForecast:
 class FavoriteLocation:
     city: str
     date: datetime
-
+    
 # Define a mutation for saving a favorite location
 @strawberry.type
 class Mutation:
@@ -52,30 +62,46 @@ class Query:
         self,
         city : str,
         date: str
-    ) -> List[WeatherForecast]:
+    ) -> List[WeeklyForecast]:
         # Convert the date string input to a datetime object
         date_obj = datetime.strptime(date, '%Y-%m-%d')
 
         # Build the request URL with the city and date parameters
-        url = f"{WEATHER_API_URL}?key={WEATHER_API_KEY}&q={city}&dt={date_obj}"
+        url = f"{WEATHER_API_URL}?key={WEATHER_API_KEY}&q={city}&days=7&aqi=no&alerts=no"
 
         # Make the API request and parse the response JSON
         response = requests.get(url)
         response_json = response.json()
 
         # Extract the forecast data from the response JSON
-        forecast_data = response_json["forecast"]["forecastday"][0]["hour"]
-
+        forecast_data = response_json["forecast"]["forecastday"]
+        
         # Map the forecast data to a list of WeatherForecast objects
         weather_forecast = [
-            WeatherForecast(
-                time=datetime.strptime(forecast["time"], '%Y-%m-%d %H:%M'),
-                temp_c=forecast["temp_c"],
-                humidity=forecast["humidity"]
+            WeeklyForecast(
+                date=datetime.strptime(forecast["date"], '%Y-%m-%d'),
+                dayofweek=datetime.strptime(forecast["date"], '%Y-%m-%d').strftime('%A'),
+                avg_temp=forecast["day"]["avgtemp_f"],
+                min_temp=forecast["day"]["mintemp_f"],
+                max_temp=forecast["day"]["maxtemp_f"],
+                avg_humidity=forecast["day"]["avghumidity"],
+                
+                
+                hourly_forecast= [
+                    HourlyForecast(
+                        current_hour=forecast["hour"][hr]["time"],
+                        temp_f=forecast["hour"][hr]["temp_f"],
+                        humidity=forecast["hour"][hr]["humidity"]
+                    )   
+                    for hr in range(0, 24)
+                ]
+                
             )
+            
             for forecast in forecast_data
         ]
 
+        
         # Return the weather forecast data
         return weather_forecast
 
@@ -83,7 +109,7 @@ class Query:
     def weather_forecast_by_favorite_location(
         self,
         favorite_location: str
-    ) -> List[WeatherForecast]:
+    ) -> List[HourlyForecast]:
         # Convert the date string input to a datetime object
         date_str = today
         
@@ -99,9 +125,9 @@ class Query:
         
         # Map the forecast data to a list of WeatherForecast objects
         weather_forecast = [
-            WeatherForecast(
-                time=datetime.strptime(forecast["time"], '%Y-%m-%d %H:%M'),
-                temp_c=forecast["temp_c"],
+            HourlyForecast(
+                current_hour=datetime.strptime(forecast["time"], '%Y-%m-%d %H:%M'),
+                temp_f=forecast["temp_c"],
                 humidity=forecast["humidity"]
             )
             for forecast in forecast_data
