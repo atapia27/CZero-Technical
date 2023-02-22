@@ -1,5 +1,9 @@
-# SETUP
+# Setup
 ```bash 
+python -m pip install --user virtualenv
+python -m virtualenv venv
+source venv/scripts/activate
+pip install pymongo
 pip3 install starlette
 pip3 install uvicorn
 pip install pydantic
@@ -9,52 +13,24 @@ pip install "uvicorn[standard]"
 pip install "strawberry-graphql[debug-server]"
 pip install requests
 pip install datetime
+pip install odmantic
 ```
 
+
+
+# Fast API Demo
 ```bash
-python -m strawberry server schema
+python -m uvicorn main:app --reload
+
 ```
+
+[Interactive API docs](http://127.0.0.1:8000/docs)
+
+[Alternative API docs](http://127.0.0.1:8000/redoc)
+
+# Strawberry Demo
+```bash
+python -m strawberry server strawberryApp
+```
+
 [Server](http://localhost:8000/graphql)
-
-# INFO
-```
-{
-  weatherForecastByCityAndDate(city: "Mexico City", date: "2023-02-25") {
-    date
-    dayofweek
-    avgTemp
-    minTemp
-    maxTemp
-		avgHumidity
-    hourlyForecast{
-      currentHour
-      tempF
-      humidity
-    }
-  }
-}
-```
->***1 query for weather where you input a city and date, output should be data on temp and humidity by time. Bonus: thoughtful about picking the data type for the output***
-
-```
-mutation{
-  saveFavoriteLocation(city:"Mexico City", date: "2023-02-21"){
-    city
-    date
-  }
-}
-```
->***1 mutation for saving your favorite***
-
-
-
-```
-{
-	weatherForecastByFavoriteLocation(favoriteLocation: "Mexico City"){
-    time
-    tempC
-    humidity
-  }
-}
-```
->***1 query for getting weather from your fav locations***
