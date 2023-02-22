@@ -1,3 +1,13 @@
+# Fast API
+```bash
+python -m uvicorn main:app --reload
+
+```
+
+[Interactive API docs](http://127.0.0.1:8000/docs)
+
+[Alternative API docs](http://127.0.0.1:8000/redoc)
+
 # Setup
 ```bash 
 python -m pip install --user virtualenv
@@ -15,18 +25,6 @@ pip install requests
 pip install datetime
 pip install odmantic
 ```
-
-
-
-# Fast API Demo
-```bash
-python -m uvicorn main:app --reload
-
-```
-
-[Interactive API docs](http://127.0.0.1:8000/docs)
-
-[Alternative API docs](http://127.0.0.1:8000/redoc)
 
 # Strawberry Demo
 ```bash
