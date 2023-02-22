@@ -2,7 +2,7 @@ import strawberry
 from datetime import datetime
 from typing import List
 from sample.core import FORECAST_WEATHER_API_URL, WEATHER_API_KEY, FUTURE_WEATHER_API_URL, CURRENT_WEATHER_API_URL
-from schema.schema import Current, WeeklyForecast, DailyForecast
+from schema.schema import Current, WeeklyForecast, DailyForecast, FavoriteLocation, FavoriteLocationWeather
 import requests
 
 
@@ -117,3 +117,15 @@ class Query:
         
         # Return the weather forecast data
         return future_weather
+
+    @strawberry.field
+    def fetch_by_fav_city(
+        self,
+        city : str,
+    ) -> FavoriteLocationWeather:
+        favorite_location_weather = FavoriteLocationWeather(
+            city=city,
+            weather=self.fetch_by_city(city)
+        )
+        return favorite_location_weather
+    

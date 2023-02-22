@@ -36,3 +36,7 @@ class DailyForecast:
 class FavoriteLocation:
     city: str
    
+@strawberry.type
+class FavoriteLocationWeather:
+    city: str
+    weather: List[WeeklyForecast]
